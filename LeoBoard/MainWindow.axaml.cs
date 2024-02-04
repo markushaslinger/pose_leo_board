@@ -5,11 +5,10 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
-using Avalonia.Threading;
 
 namespace LeoBoard;
 
-public partial class MainWindow : Window
+internal partial class MainWindow : Window
 {
     private readonly Dictionary<CellId, TextBlock?> _cellContents;
     
@@ -18,8 +17,8 @@ public partial class MainWindow : Window
         const int ExtraMargin = 4;
         
         _cellContents = new();
-        Width = Board.Config.Columns * Config.CellSize + ExtraMargin;
-        Height = Board.Config.Rows * Config.CellSize + ExtraMargin;
+        Width = Board.Config.Columns * Board.Config.CellSize + ExtraMargin;
+        Height = Board.Config.Rows * Board.Config.CellSize + ExtraMargin;
         
         InitializeComponent();
         
@@ -44,32 +43,27 @@ public partial class MainWindow : Window
         }
         
         var textBlock = CreateCellContent(content, row, col, color);
-        
-        /*var left = (Config.CellSize - textBlock.Bounds.Width) / 2;
-        var top = (Config.CellSize - textBlock.Bounds.Height) / 2;
-        Canvas.SetLeft(textBlock, col * Config.CellSize + left);
-        Canvas.SetTop(textBlock, row * Config.CellSize + top);*/
 
         MainCanvas.Children.Add(textBlock);
         
         _cellContents[id] = textBlock;
     }
 
-    private static TextBlock CreateCellContent(string text, int row, int col, IBrush color)
+    private TextBlock CreateCellContent(string text, int row, int col, IBrush color)
     {
         var textBlock = new TextBlock
         {
             Text = text,
             Foreground = color,
-            FontSize = 12,
+            FontSize = Board.Config.FontSize,
             FontWeight = FontWeight.Bold,
             TextAlignment = TextAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center,
             RenderTransform = new TranslateTransform
             {
-                X = (col  * Config.CellSize) + 0.25 * Config.CellSize,
-                Y = (row  * Config.CellSize) + 0.125 * Config.CellSize
+                X = (col  * Board.Config.CellSize) + 0.25 * Board.Config.CellSize,
+                Y = (row  * Board.Config.CellSize) + 0.125 * Board.Config.CellSize
             }
         };
 
@@ -86,8 +80,8 @@ public partial class MainWindow : Window
 
     private static (int row, int col) GetCell(Point clickPosition)
     {
-        var col = Math.Floor(clickPosition.X / Config.CellSize);
-        var row = Math.Floor(clickPosition.Y / Config.CellSize);
+        var col = Math.Floor(clickPosition.X / Board.Config.CellSize);
+        var row = Math.Floor(clickPosition.Y / Board.Config.CellSize);
         return ((int) row, (int) col);
     }
 
@@ -102,15 +96,15 @@ public partial class MainWindow : Window
                 // but rectangles receive and propagate pointer events => which is what we want
                 var rectangle = new Rectangle
                 {
-                    Width = Config.CellSize,
-                    Height = Config.CellSize,
+                    Width = Board.Config.CellSize,
+                    Height = Board.Config.CellSize,
                     Fill = Brushes.Transparent,
                     Stroke = Brushes.Black,
                     StrokeThickness = 0.25D
                 };
 
-                Canvas.SetLeft(rectangle, col * Config.CellSize);
-                Canvas.SetTop(rectangle, row * Config.CellSize);
+                Canvas.SetLeft(rectangle, col * Board.Config.CellSize);
+                Canvas.SetTop(rectangle, row * Board.Config.CellSize);
                 MainCanvas.Children.Add(rectangle);
                 _cellContents.Add(new(row, col), null);
             }

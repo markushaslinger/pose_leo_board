@@ -9,7 +9,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\LeoBoard\LeoBoard.csproj" />
-      <ProjectReference Include="..\NewBoard\NewBoard.csproj" />
     </ItemGroup>
 
 </Project>
