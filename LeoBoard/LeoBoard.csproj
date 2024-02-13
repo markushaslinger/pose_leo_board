@@ -7,6 +7,17 @@
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <PackageType>Dependency</PackageType>
+        <PackageVersion>1.0.0-beta1</PackageVersion>
+        <PackageId>HTLLeonding.Utility.LeoBoard</PackageId>
+        <PackageReadmeFile>readme.md</PackageReadmeFile>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Title>HTL Leonding Simple 2D Board</Title>
+        <Authors>M. Haslinger</Authors>
+        <Description>
+            Allows to work with a simple 2D board for e.g. minesweeper and similar projects.
+        </Description>
+        <PackageTags>2D;HTL-Leonding</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>
