@@ -11,14 +11,24 @@ namespace LeoBoard;
 internal partial class MainWindow : Window
 {
     private readonly Dictionary<CellId, TextBlock?> _cellContents;
+    private readonly int _effectiveColumns;
+    private readonly int _effectiveRows;
+    private readonly bool _drawGridNumbers;
     
     public MainWindow()
     {
         const int ExtraMargin = 4;
         
         _cellContents = new();
-        Width = Board.Config.Columns * Board.Config.CellSize + ExtraMargin;
-        Height = Board.Config.Rows * Board.Config.CellSize + ExtraMargin;
+        _effectiveColumns = Board.Config.DrawGridNumbers
+            ? Board.Config.Columns + 1
+            : Board.Config.Columns;
+        _effectiveRows = Board.Config.DrawGridNumbers
+            ? Board.Config.Rows + 1
+            : Board.Config.Rows;
+        Width = _effectiveColumns * Board.Config.CellSize + ExtraMargin;
+        Height = _effectiveRows * Board.Config.CellSize + ExtraMargin;
+        _drawGridNumbers = Board.Config.DrawGridNumbers;
         
         InitializeComponent();
         
@@ -51,6 +61,12 @@ internal partial class MainWindow : Window
 
     private TextBlock CreateCellContent(string text, int row, int col, IBrush color)
     {
+        var xOffset = text.Length switch
+                      {
+                          1 => 0.25D,
+                          2 => 0.125D,
+                          _ => throw new ArgumentOutOfRangeException(nameof(text), "Cell content can not exceed 2 characters")
+                      };
         var textBlock = new TextBlock
         {
             Text = text,
@@ -60,10 +76,11 @@ internal partial class MainWindow : Window
             TextAlignment = TextAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center,
+            FontFamily = new FontFamily("Consolas, Courier New, Courier"),
             RenderTransform = new TranslateTransform
             {
-                X = (col  * Board.Config.CellSize) + 0.25 * Board.Config.CellSize,
-                Y = (row  * Board.Config.CellSize) + 0.125 * Board.Config.CellSize
+                X = (col  * Board.Config.CellSize) + xOffset * Board.Config.CellSize,
+                Y = (row  * Board.Config.CellSize) + 0.175D * Board.Config.CellSize
             }
         };
 
@@ -74,6 +91,18 @@ internal partial class MainWindow : Window
     {
         e.Handled = true;
         var (row, col) = GetCell(e.GetPosition(this));
+        
+        if (_drawGridNumbers)
+        {
+            if (row == 0 || col == 0)
+            {
+                return;
+            }
+            
+            row--;
+            col--;
+        }
+        
         var isLeftClick = !e.GetCurrentPoint(this).Properties.IsRightButtonPressed;
         Board.Config.ClickHandler?.Invoke(row, col, isLeftClick);
     }
@@ -88,9 +117,9 @@ internal partial class MainWindow : Window
     private void DrawGrid()
     {
         MainCanvas.Children.Clear();
-        for (var row = 0; row < Board.Config.Rows; row++)
+        for (var row = 0; row < _effectiveRows; row++)
         {
-            for (var col = 0; col < Board.Config.Columns; col++)
+            for (var col = 0; col < _effectiveColumns; col++)
             {
                 // we use rectangles instead of lines, because the space between lines is not clickable
                 // but rectangles receive and propagate pointer events => which is what we want
@@ -107,8 +136,26 @@ internal partial class MainWindow : Window
                 Canvas.SetTop(rectangle, row * Board.Config.CellSize);
                 MainCanvas.Children.Add(rectangle);
                 _cellContents.Add(new(row, col), null);
+                
+                if (!_drawGridNumbers || (row != 0 && col != 0))
+                {
+                    continue;
+                }
+
+                if (row == 0 && col > 0)
+                {
+                    SetCellContent(0, col, FormatGridNumber(col), Brushes.DimGray);    
+                }
+                else if (col == 0 && row > 0)
+                {
+                    SetCellContent(row, 0, FormatGridNumber(row), Brushes.DimGray);
+                }
             }
         }
+        
+        return;
+        
+        static string FormatGridNumber(int n) => n.ToString("00");
     }
     
     private readonly record struct CellId(int Row, int Col);

@@ -53,6 +53,17 @@ public static class Board
             throw new InvalidOperationException("Handler for setting cell content not set");
         }
 
+        if (content.Length > 1)
+        {
+            throw new InvalidOperationException("Cell content may only be a single character");
+        }
+
+        if (Config.DrawGridNumbers)
+        {
+            row++;
+            col++;
+        }
+
         Dispatcher.UIThread.Invoke(() => { SetCellContentOnWindow.Invoke(row, col, content, color ?? Brushes.Black); });
     }
 
@@ -64,7 +75,7 @@ public static class Board
             try
             {
                 var exitCode = BuildAvaloniaApp()
-                    .StartWithClassicDesktopLifetime(Array.Empty<string>());
+                    .StartWithClassicDesktopLifetime([]);
                 Console.WriteLine($"Window exited with code {exitCode}");
             }
             catch (Exception e)
