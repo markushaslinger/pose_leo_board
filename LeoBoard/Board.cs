@@ -93,5 +93,5 @@ public static class Board
                       .LogToTrace();
     }
 
-    private static DateTimeOffset GetNow() => TimeProvider.System.GetUtcNow();
+    private static DateTimeOffset GetNow() => DateTimeOffset.UtcNow;
 }
