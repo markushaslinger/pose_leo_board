@@ -16,7 +16,25 @@
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.0-beta1" />
         <PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.0-beta1" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.9" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.1.0-beta1" />
     </ItemGroup>
+
+    <ItemGroup>
+        <None Include="../readme.md" Pack="true" PackagePath="" />
+        <None Include="../sample_run.png" Pack="true" PackagePath="" />
+    </ItemGroup>
+
+    <PropertyGroup>
+        <Title>HTL Leonding Board for simple UI</Title>
+        <Description>A utility library for drawing a grid on a canvas with click handler support to e.g. implement Minesweeper</Description>
+        <PackageId>HTLLeonding.Utility.LeoBoard</PackageId>
+        <PackageReadmeFile>readme.md</PackageReadmeFile>
+        <PackageType>Dependency</PackageType>
+        <PackageVersion>1.0.0-preview1</PackageVersion>
+        <Authors>M. Haslinger</Authors>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageTags>skia;HTL-Leonding;board;drawing</PackageTags>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
 
 </Project>
