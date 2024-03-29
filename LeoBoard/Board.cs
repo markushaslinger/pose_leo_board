@@ -9,6 +9,7 @@ public static class Board
     private static readonly TimeSpan initWaitInterval = TimeSpan.FromMilliseconds(125);
     private static readonly TimeSpan initWaitMax = TimeSpan.FromSeconds(10);
     private static Config? _config;
+    private static readonly ValueCache _cellValues = new();
 
     public static bool Initialized { get; internal set; }
     internal static Config Config => _config ?? throw new InvalidOperationException("No config set");
@@ -26,6 +27,7 @@ public static class Board
         // TODO handle draw grid numbers
         _config = new(title, rows, columns, cellSize, fontSize, drawGridNumbers, clickHandler);
         _config.EnsureValid();
+        _cellValues.Clear();
 
         OpenWindow();
 
@@ -58,6 +60,8 @@ public static class Board
             throw new InvalidOperationException("Cell content may only be a single character");
         }
 
+        _cellValues[row, col] = content;
+        
         if (Config.DrawGridNumbers)
         {
             row++;
@@ -66,6 +70,8 @@ public static class Board
 
         Dispatcher.UIThread.Invoke(() => { SetCellContentOnWindow.Invoke(row, col, content, color ?? Brushes.Black); });
     }
+    
+    public static string GetCellContent(int row, int col) => _cellValues[row, col];
 
     private static void OpenWindow()
     {

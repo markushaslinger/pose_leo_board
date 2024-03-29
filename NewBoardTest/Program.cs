@@ -9,7 +9,11 @@ Board.SetCellContent(0, 0, "X");
 Board.SetCellContent(1, 1, "Y", Brushes.Red);
 Board.SetCellContent(2, 2, "Z", Brushes.Blue);
 
+Console.WriteLine(Board.GetCellContent(2, 2));
+
 Console.ReadKey();
+
+return;
 
 void HandleClick(int row, int col, bool leftClick)
 {
