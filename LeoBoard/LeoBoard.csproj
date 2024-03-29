@@ -33,7 +33,7 @@
         <PackageVersion>1.0.0-preview1</PackageVersion>
         <Authors>M. Haslinger</Authors>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageTags>skia;HTL-Leonding;board;drawing</PackageTags>
+        <PackageTags>skia;HTL-Leonding;board;drawing;avalonia</PackageTags>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
 
