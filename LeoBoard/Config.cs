@@ -9,6 +9,7 @@ internal sealed record Config(
     int CellSize,
     int FontSize,
     bool DrawGridNumbers,
+    bool TestMode,
     Action<int, int, bool>? ClickHandler)
 {
     public void EnsureValid()
