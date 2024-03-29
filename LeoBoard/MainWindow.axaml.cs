@@ -26,13 +26,16 @@ internal partial class MainWindow : Window
         _effectiveRows = Board.Config.DrawGridNumbers
             ? Board.Config.Rows + 1
             : Board.Config.Rows;
-        Width = _effectiveColumns * Board.Config.CellSize + ExtraMargin;
-        Height = _effectiveRows * Board.Config.CellSize + ExtraMargin;
+        Width = Math.Max(Config.MinWidth, _effectiveColumns * Board.Config.CellSize + ExtraMargin);
+        Height = Math.Max(Config.MinHeight, _effectiveRows * Board.Config.CellSize + ExtraMargin);
+        MinWidth = Width;
+        MinHeight = Height;
         _drawGridNumbers = Board.Config.DrawGridNumbers;
         
         InitializeComponent();
         
         Title = Board.Config.Title;
+        CanResize = false;
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)

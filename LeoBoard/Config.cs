@@ -13,6 +13,9 @@ internal sealed record Config(
     bool TestMode,
     Action<int, int, bool>? ClickHandler)
 {
+    public const int MinWidth = 100;
+    public const int MinHeight = 60;
+    
     public void EnsureValid()
     {
         if (string.IsNullOrWhiteSpace(Title))
