@@ -79,7 +79,7 @@ internal partial class MainWindow : Window
             FontFamily = new FontFamily("Consolas, Courier New, Courier"),
             RenderTransform = new TranslateTransform
             {
-                X = (col  * Board.Config.CellSize) + xOffset * Board.Config.CellSize,
+                X = (col  * Board.Config.CellSize) + (xOffset * Board.Config.CellSize) + Board.Config.ExtraXTextOffset,
                 Y = (row  * Board.Config.CellSize) + 0.25D * Board.Config.CellSize
             }
         };

@@ -8,6 +8,7 @@ internal sealed record Config(
     int Columns,
     int CellSize,
     int FontSize,
+    int ExtraXTextOffset,
     bool DrawGridNumbers,
     bool TestMode,
     Action<int, int, bool>? ClickHandler)

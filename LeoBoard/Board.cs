@@ -9,7 +9,7 @@ public static class Board
     private static readonly TimeSpan initWaitInterval = TimeSpan.FromMilliseconds(125);
     private static readonly TimeSpan initWaitMax = TimeSpan.FromSeconds(10);
     private static Config? _config;
-    private static readonly ValueCache _cellValues = new();
+    private static readonly ValueCache cellValues = new();
 
     public static bool Initialized { get; internal set; }
     internal static Config Config => _config ?? throw new InvalidOperationException("No config set");
@@ -17,18 +17,19 @@ public static class Board
 
     public static void InitializeForTest(int rows, int columns)
     {
-        Initialize(new ("Test", rows, columns, 20, 12, false, true, null));
+        Initialize(new ("Test", rows, columns, 20, 12, 0, 
+                        false, true, null));
     }
 
     private static void Initialize(Config config)
     {
         _config = config;
         _config.EnsureValid();
-        _cellValues.Clear();
+        cellValues.Clear();
     }
 
     public static async Task Initialize(string title = "LeoBoard", int rows = 8, int columns = 8, int cellSize = 20,
-                                        int fontSize = 12, bool drawGridNumbers = false, 
+                                        int fontSize = 12, bool drawGridNumbers = false, int extraXTextOffset = 0,
                                         Action<int, int, bool>? clickHandler = null, int afterInitWaitSeconds = 1)
     {
         if (Initialized)
@@ -36,7 +37,8 @@ public static class Board
             throw new InvalidOperationException("Already initialized");
         }
 
-        Initialize(new(title, rows, columns, cellSize, fontSize, drawGridNumbers, false, clickHandler));
+        Initialize(new(title, rows, columns, cellSize, fontSize, extraXTextOffset, 
+                       drawGridNumbers, false, clickHandler));
 
         OpenWindow();
 
@@ -64,7 +66,7 @@ public static class Board
             throw new InvalidOperationException("Cell content may only be a single character");
         }
 
-        _cellValues[row, col] = content;
+        cellValues[row, col] = content;
 
         if (Config.TestMode)
         {
@@ -85,7 +87,7 @@ public static class Board
         Dispatcher.UIThread.Invoke(() => { SetCellContentOnWindow.Invoke(row, col, content, color ?? Brushes.Black); });
     }
     
-    public static string GetCellContent(int row, int col) => _cellValues[row, col];
+    public static string GetCellContent(int row, int col) => cellValues[row, col];
 
     private static void OpenWindow()
     {
