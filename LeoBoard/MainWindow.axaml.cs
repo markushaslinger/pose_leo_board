@@ -80,7 +80,7 @@ internal partial class MainWindow : Window
             RenderTransform = new TranslateTransform
             {
                 X = (col  * Board.Config.CellSize) + xOffset * Board.Config.CellSize,
-                Y = (row  * Board.Config.CellSize) + 0.175D * Board.Config.CellSize
+                Y = (row  * Board.Config.CellSize) + 0.25D * Board.Config.CellSize
             }
         };
 
