@@ -5,7 +5,7 @@ A utility library for creating simple, grid based UI application like Minesweepe
 Allows to draw a grid with specified size, optional row and column numbers, and content for each cell.
 Left- and right-click events are captured and can be handled to update the cell content.
 
-![sample_run.png](sample_run.png)
+![sample_run.png](https://raw.githubusercontent.com/markushaslinger/pose_leo_board/master/sample_run.png)
 
 ## Sample usage
 
