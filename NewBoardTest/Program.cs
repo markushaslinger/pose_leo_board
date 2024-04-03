@@ -8,6 +8,7 @@ await Board.Initialize("Foo", 10, 20,
 Board.SetCellContent(0, 0, "X");
 Board.SetCellContent(1, 1, "Y", Brushes.Red);
 Board.SetCellContent(2, 2, "Z", Brushes.Blue);
+Board.SetCellContent(2, 2, "⬤", Brushes.Blue);
 
 Console.WriteLine(Board.GetCellContent(2, 2));
 
