@@ -62,7 +62,7 @@ internal partial class MainWindow : Window
         _cellContents[id] = textBlock;
     }
 
-    private TextBlock CreateCellContent(string text, int row, int col, IBrush color)
+    private static TextBlock CreateCellContent(string text, int row, int col, IBrush color)
     {
         var xOffset = text.Length switch
                       {

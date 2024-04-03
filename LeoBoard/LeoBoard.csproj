@@ -12,12 +12,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.1.0-beta1" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.1.0-beta1" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.0-beta1" />
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.0-beta1" />
+        <PackageReference Include="Avalonia" Version="11.0.10" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.10" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.10" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.1.0-beta1" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.10" />
+        <PackageReference Include="MessageBox.Avalonia" Version="3.1.5.1" />
     </ItemGroup>
 
     <ItemGroup>
@@ -30,7 +31,7 @@
         <PackageId>HTLLeonding.Utility.LeoBoard</PackageId>
         <PackageReadmeFile>readme.md</PackageReadmeFile>
         <PackageType>Dependency</PackageType>
-        <PackageVersion>1.0.0-preview6</PackageVersion>
+        <PackageVersion>1.0.0</PackageVersion>
         <Authors>M. Haslinger</Authors>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageTags>skia;HTL-Leonding;board;drawing;avalonia</PackageTags>
