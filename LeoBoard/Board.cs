@@ -1,6 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Media;
 using Avalonia.Threading;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
 
 namespace LeoBoard;
 
@@ -88,6 +90,22 @@ public static class Board
     }
     
     public static string GetCellContent(int row, int col) => cellValues[row, col];
+
+    public static void ShowMessageBox(string message, string title = "Information")
+    {
+        Dispatcher.UIThread.Invoke(async () =>
+        {
+            try
+            {
+                var box = MessageBoxManager.GetMessageBoxStandard(title, message, ButtonEnum.Ok);
+                await box.ShowAsync();
+            } 
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        });
+    }
 
     private static void OpenWindow()
     {

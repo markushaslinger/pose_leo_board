@@ -11,6 +11,8 @@ Board.SetCellContent(2, 2, "Z", Brushes.Blue);
 
 Console.WriteLine(Board.GetCellContent(2, 2));
 
+Board.ShowMessageBox("Hello World!");
+
 Console.ReadKey();
 
 return;
