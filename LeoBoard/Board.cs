@@ -14,7 +14,7 @@ public static class Board
     private static readonly ValueCache cellValues = new();
 
     public static bool Initialized { get; internal set; }
-    internal static Config Config => _config ?? throw new InvalidOperationException("No config set");
+    internal static Config Config => _config ?? throw new BoardException("No config set");
     internal static Action<int, int, string, IBrush>? SetCellContentOnWindow { get; set; }
 
     public static void InitializeForTest(int rows, int columns)
@@ -36,7 +36,7 @@ public static class Board
     {
         if (Initialized)
         {
-            throw new InvalidOperationException("Already initialized");
+            throw new BoardException("Already initialized");
         }
 
         Initialize(new(title, rows, columns, cellSize, fontSize, extraXTextOffset, 
@@ -65,9 +65,10 @@ public static class Board
     {
         if (content.Length > 1)
         {
-            throw new InvalidOperationException("Cell content may only be a single character");
+            throw new BoardException("Cell content may only be a single character");
         }
 
+        ThrowIfCellNotInRange(row, col);
         cellValues[row, col] = content;
 
         if (Config.TestMode)
@@ -77,7 +78,7 @@ public static class Board
         
         if (SetCellContentOnWindow is null)
         {
-            throw new InvalidOperationException("Handler for setting cell content not set");
+            throw new BoardException("Handler for setting cell content not set");
         }
         
         if (Config.DrawGridNumbers)
@@ -88,8 +89,12 @@ public static class Board
 
         Dispatcher.UIThread.Invoke(() => { SetCellContentOnWindow.Invoke(row, col, content, color ?? Brushes.Black); });
     }
-    
-    public static string GetCellContent(int row, int col) => cellValues[row, col];
+
+    public static string GetCellContent(int row, int col)
+    {
+        ThrowIfCellNotInRange(row, col);
+        return cellValues[row, col];
+    } 
 
     public static void ShowMessageBox(string message, string title = "Information")
     {
@@ -105,6 +110,14 @@ public static class Board
                 Console.WriteLine(e.Message);
             }
         });
+    }
+
+    private static void ThrowIfCellNotInRange(int row, int col)
+    {
+        if (row < 0 || row >= Config.Rows || col < 0 || col >= Config.Columns)
+        {
+            throw new BoardException($"Cell ({row}, {col}) is out of range");
+        }
     }
 
     private static void OpenWindow()
@@ -135,3 +148,5 @@ public static class Board
 
     private static DateTimeOffset GetNow() => DateTimeOffset.UtcNow;
 }
+
+public sealed class BoardException(string message) : InvalidOperationException(message);

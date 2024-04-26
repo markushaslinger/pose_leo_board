@@ -69,7 +69,7 @@ internal partial class MainWindow : Window
                           0 => 0D,
                           1 => 0.25D,
                           2 => 0.125D,
-                          _ => throw new ArgumentOutOfRangeException(nameof(text), text, "Cell content can not exceed 2 characters")
+                          _ => throw new ArgumentOutOfRangeException(nameof(text), text, "Cell content cannot exceed 2 characters")
                       };
         var textBlock = new TextBlock
         {
