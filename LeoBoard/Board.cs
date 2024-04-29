@@ -30,7 +30,7 @@ public static class Board
         cellValues.Clear();
     }
 
-    public static async Task Initialize(string title = "LeoBoard", int rows = 8, int columns = 8, int cellSize = 20,
+    public static void Initialize(Action mainMethod, string title = "LeoBoard", int rows = 8, int columns = 8, int cellSize = 20,
                                         int fontSize = 12, bool drawGridNumbers = false, int extraXTextOffset = 0,
                                         Action<int, int, bool>? clickHandler = null, int afterInitWaitSeconds = 1)
     {
@@ -42,23 +42,30 @@ public static class Board
         Initialize(new(title, rows, columns, cellSize, fontSize, extraXTextOffset, 
                        drawGridNumbers, false, clickHandler));
 
+        Task.Run(async () =>
+        {
+            var waitStart = GetNow();
+            var maxWait = waitStart + initWaitMax;
+            while (!Initialized && GetNow() < maxWait)
+            {
+                await Task.Delay(initWaitInterval);
+            }
+
+            if (!Initialized)
+            {
+                Console.WriteLine("Failed to initialize application window!");
+            }
+            else
+            {
+                await Task.Delay(TimeSpan.FromSeconds(Math.Max(afterInitWaitSeconds, 0)));
+            }
+            
+            mainMethod();
+        });
+        
         OpenWindow();
 
-        var waitStart = GetNow();
-        var maxWait = waitStart + initWaitMax;
-        while (!Initialized && GetNow() < maxWait)
-        {
-            await Task.Delay(initWaitInterval);
-        }
 
-        if (!Initialized)
-        {
-            Console.WriteLine("Failed to initialize application window!");
-        }
-        else
-        {
-            await Task.Delay(TimeSpan.FromSeconds(Math.Max(afterInitWaitSeconds, 0)));
-        }
     }
 
     public static void SetCellContent(int row, int col, string content, IBrush? color = null)
@@ -122,20 +129,16 @@ public static class Board
 
     private static void OpenWindow()
     {
-        // separate thread to allow interaction
-        Task.Run(() =>
+        try
         {
-            try
-            {
-                var exitCode = BuildAvaloniaApp()
-                    .StartWithClassicDesktopLifetime([]);
-                Console.WriteLine($"Window exited with code {exitCode}");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-        });
+            var exitCode = BuildAvaloniaApp()
+                .StartWithClassicDesktopLifetime([]);
+            Console.WriteLine($"Window exited with code {exitCode}");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
 
         return;
 
