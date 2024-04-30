@@ -1,9 +1,9 @@
 ﻿using Avalonia.Media;
 using LeoBoard;
 
-Board.Initialize(Run, "Foo", 10, 20, 
-                       clickHandler: HandleClick,
-                       drawGridNumbers: true);
+Board.Initialize(Run, "Foo", 10, 20,
+                 clickHandler: HandleClick,
+                 drawGridNumbers: true);
 
 return;
 
