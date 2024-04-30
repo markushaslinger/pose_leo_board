@@ -10,21 +10,24 @@ Left- and right-click events are captured and can be handled to update the cell 
 ## Sample usage
 
 ```csharp
-await Board.Initialize("Demo", 10, 20, 
-                       clickHandler: HandleClick,
-                       drawGridNumbers: true);
-
-Board.SetCellContent(0, 0, "X");
-Board.SetCellContent(1, 1, "Y", Brushes.Red);
-Board.SetCellContent(2, 2, "Z", Brushes.Blue);
-
-Console.WriteLine(Board.GetCellContent(2, 2));
-
-Board.ShowMessageBox("Hello World!");
-
-Console.ReadKey();
+Board.Initialize(Run, "Foo", 10, 20,
+                 clickHandler: HandleClick,
+                 drawGridNumbers: true);
 
 return;
+
+void Run()
+{
+    Board.SetCellContent(0, 0, "X");
+    Board.SetCellContent(1, 1, "Y", Brushes.Red);
+    Board.SetCellContent(2, 2, "Z", Brushes.Blue);
+    
+    Console.WriteLine(Board.GetCellContent(2, 2));
+    
+    Board.ShowMessageBox("Hello World!");
+    
+    Console.ReadKey();
+}
 
 void HandleClick(int row, int col, bool leftClick)
 {
@@ -40,6 +43,6 @@ void HandleClick(int row, int col, bool leftClick)
 }
 ```
 
+- It is necessary to pass a method reference (`Run` in the above sample) to the initialization method, because to also support macOS we have to use the main thread as UI thread and spin up a second thread for the console interaction and actual 'main' logic. This complexity is hidden from the students as good as possible, but this small requirement remains for technical reasons.
 - The `Console.ReadKey()` call is required to keep the hosting console application alive
-  - Mind the `await` for the `Initialize` method
 - Allow for a few seconds for the window to appear (some async initialization is happening)
