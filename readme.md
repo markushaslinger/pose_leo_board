@@ -18,6 +18,8 @@ return;
 
 void Run()
 {
+    Console.OutputEncoding = Encoding.UTF8;
+    
     Board.SetCellContent(0, 0, "X");
     Board.SetCellContent(1, 1, "Y", Brushes.Red);
     Board.SetCellContent(2, 2, "Z", Brushes.Blue);
