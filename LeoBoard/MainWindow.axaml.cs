@@ -85,7 +85,8 @@ internal partial class MainWindow : Window
             {
                 X = (col  * Board.Config.CellSize) + (xOffset * Board.Config.CellSize) + Board.Config.ExtraXTextOffset,
                 Y = (row  * Board.Config.CellSize) + 0.25D * Board.Config.CellSize
-            }
+            },
+            UseLayoutRounding = true
         };
 
         return textBlock;
