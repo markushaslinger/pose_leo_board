@@ -31,7 +31,7 @@
         <PackageId>HTLLeonding.Utility.LeoBoard</PackageId>
         <PackageReadmeFile>readme.md</PackageReadmeFile>
         <PackageType>Dependency</PackageType>
-        <PackageVersion>3.0.1</PackageVersion>
+        <PackageVersion>3.1.0</PackageVersion>
         <Authors>M. Haslinger</Authors>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageTags>skia;HTL-Leonding;board;drawing;avalonia</PackageTags>
