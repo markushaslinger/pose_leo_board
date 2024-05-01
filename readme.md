@@ -1,8 +1,8 @@
 ﻿# LeoBoard
 
-A utility library for creating simple, grid based UI application like Minesweeper, Chess, etc.
+A utility library for creating simple, grid-based UI application like Minesweeper, Chess, etc.
 
-Allows to draw a grid with specified size, optional row and column numbers, and content for each cell.
+Allows drawing a grid with specified size, optional row and column numbers, and content for each cell.
 Left- and right-click events are captured and can be handled to update the cell content.
 
 ![sample_run.png](https://raw.githubusercontent.com/markushaslinger/pose_leo_board/master/sample_run.png)
@@ -29,9 +29,10 @@ void Run()
     Console.ReadKey();
 }
 
-void HandleClick(int row, int col, bool leftClick)
+void HandleClick(int row, int col, bool leftClick, bool ctrlKeyPressed)
 {
-    Console.WriteLine($"Clicked cell ({row}, {col}) with {(leftClick ? "left" : "right")} mouse button");
+    string ctrlState = ctrlKeyPressed ? " while pressing the Ctrl key" : string.Empty;
+    Console.WriteLine($"Clicked cell ({row}, {col}) with {(leftClick ? "left" : "right")} mouse button{ctrlState}");
     if (leftClick)
     {
         Board.SetCellContent(row, col, "A", Brushes.Green);

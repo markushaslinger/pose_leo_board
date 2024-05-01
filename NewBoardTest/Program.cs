@@ -21,9 +21,10 @@ void Run()
     Console.ReadKey();
 }
 
-void HandleClick(int row, int col, bool leftClick)
+void HandleClick(int row, int col, bool leftClick, bool ctrlKeyPressed)
 {
-    Console.WriteLine($"Clicked cell ({row}, {col}) with {(leftClick ? "left" : "right")} mouse button");
+    string ctrlState = ctrlKeyPressed ? " while pressing the Ctrl key" : string.Empty;
+    Console.WriteLine($"Clicked cell ({row}, {col}) with {(leftClick ? "left" : "right")} mouse button{ctrlState}");
     if (leftClick)
     {
         Board.SetCellContent(row, col, "A", Brushes.Green);

@@ -32,7 +32,7 @@ public static class Board
 
     public static void Initialize(Action mainMethod, string title = "LeoBoard", int rows = 8, int columns = 8, int cellSize = 20,
                                         int fontSize = 12, bool drawGridNumbers = false, int extraXTextOffset = 0,
-                                        Action<int, int, bool>? clickHandler = null, int afterInitWaitSeconds = 1)
+                                        Action<int, int, bool, bool>? clickHandler = null, int afterInitWaitSeconds = 1)
     {
         if (Initialized)
         {
@@ -94,7 +94,10 @@ public static class Board
             col++;
         }
 
-        Dispatcher.UIThread.Invoke(() => { SetCellContentOnWindow.Invoke(row, col, content, color ?? Brushes.Black); });
+        Dispatcher.UIThread.Post(() =>
+        {
+            SetCellContentOnWindow.Invoke(row, col, content, color ?? Brushes.Black);
+        }, DispatcherPriority.MaxValue);
     }
 
     public static string GetCellContent(int row, int col)
@@ -105,7 +108,8 @@ public static class Board
 
     public static void ShowMessageBox(string message, string title = "Information")
     {
-        Dispatcher.UIThread.Invoke(async () =>
+        // ReSharper disable once AsyncVoidLambda - no way around it here, we catch any exceptions
+        Dispatcher.UIThread.Post(async () =>
         {
             try
             {
@@ -116,7 +120,7 @@ public static class Board
             {
                 Console.WriteLine(e.Message);
             }
-        });
+        }, DispatcherPriority.MaxValue);
     }
 
     private static void ThrowIfCellNotInRange(int row, int col)

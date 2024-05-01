@@ -108,7 +108,8 @@ internal partial class MainWindow : Window
         }
         
         var isLeftClick = !e.GetCurrentPoint(this).Properties.IsRightButtonPressed;
-        Board.Config.ClickHandler?.Invoke(row, col, isLeftClick);
+        var isCtrlKeyHeld = e.KeyModifiers.HasFlag(KeyModifiers.Control);
+        Board.Config.ClickHandler?.Invoke(row, col, isLeftClick, isCtrlKeyHeld);
     }
 
     private static (int row, int col) GetCell(Point clickPosition)

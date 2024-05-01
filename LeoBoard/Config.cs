@@ -11,7 +11,7 @@ internal sealed record Config(
     int ExtraXTextOffset,
     bool DrawGridNumbers,
     bool TestMode,
-    Action<int, int, bool>? ClickHandler)
+    Action<int, int, bool, bool>? ClickHandler)
 {
     public const int MinWidth = 100;
     public const int MinHeight = 60;
