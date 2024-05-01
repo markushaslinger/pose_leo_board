@@ -32,12 +32,14 @@ internal sealed record Config(
         
         static void EnsureMinSize(int value, [CallerArgumentExpression(nameof(value))] string valueName = "")
         {
-            if (value > 1)
+            const int MinSize = 1;
+            
+            if (value >= MinSize)
             {
                 return;
             }
             
-            throw new ArgumentException($"{valueName} must be at least 1");
+            throw new ArgumentException($"{valueName} must be at least {MinSize}");
         }
     }
 }
