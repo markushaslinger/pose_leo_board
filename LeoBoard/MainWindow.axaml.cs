@@ -19,7 +19,7 @@ internal partial class MainWindow : Window
     {
         const int ExtraMargin = 4;
         
-        _cellContents = new();
+        _cellContents = new Dictionary<CellId, TextBlock?>();
         _effectiveColumns = Board.Config.DrawGridNumbers
             ? Board.Config.Columns + 1
             : Board.Config.Columns;

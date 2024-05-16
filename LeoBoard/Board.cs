@@ -12,6 +12,7 @@ public static class Board
     private static readonly TimeSpan initWaitMax = TimeSpan.FromSeconds(10);
     private static Config? _config;
     private static readonly ValueCache cellValues = new();
+    private static readonly object setContentMutex = new();
 
     public static bool Initialized { get; internal set; }
     internal static Config Config => _config ?? throw new BoardException("No config set");
@@ -94,15 +95,22 @@ public static class Board
             col++;
         }
 
-        using ManualResetEventSlim mres = new ManualResetEventSlim();
-        
-        Dispatcher.UIThread.Post(() =>
+        Task.Run(() =>
         {
-            SetCellContentOnWindow.Invoke(row, col, content, color ?? Brushes.Black);
-            mres.Set();
-        }, DispatcherPriority.MaxValue);
+            lock (setContentMutex)
+            {
+                using var @event = new ManualResetEventSlim();
+        
+                Dispatcher.UIThread.Post(() =>
+                {
+                    SetCellContentOnWindow.Invoke(row, col, content, color ?? Brushes.Black);
+                    // ReSharper disable once AccessToDisposedClosure - we are waiting for the set before disposing
+                    @event.Set();
+                }, DispatcherPriority.MaxValue);
 
-        mres.Wait();
+                @event.Wait();
+            } 
+        });
     }
 
     public static string GetCellContent(int row, int col)
