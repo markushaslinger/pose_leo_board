@@ -94,10 +94,15 @@ public static class Board
             col++;
         }
 
+        using ManualResetEventSlim mres = new ManualResetEventSlim();
+        
         Dispatcher.UIThread.Post(() =>
         {
             SetCellContentOnWindow.Invoke(row, col, content, color ?? Brushes.Black);
+            mres.Set();
         }, DispatcherPriority.MaxValue);
+
+        mres.Wait();
     }
 
     public static string GetCellContent(int row, int col)
