@@ -54,13 +54,12 @@ internal partial class MainWindow : Window
         {
             currentContent.Text = content;
             currentContent.Foreground = color;
+            return;
         }
-        else
-        {
-            var textBlock = CreateCellContent(content, row, col, color);
-            MainCanvas.Children.Add(textBlock);
-            _cellContents[id] = textBlock;
-        }
+        
+        var textBlock = CreateCellContent(content, row, col, color);
+        MainCanvas.Children.Add(textBlock);
+        _cellContents[id] = textBlock;
     }
 
     private static TextBlock CreateCellContent(string text, int row, int col, IBrush color)
