@@ -6,7 +6,9 @@ using System.Text;
 using Avalonia.Media;
 using LeoBoard;
 
-const int BOARD_SIZE = 60;
+const int BOARD_SIZE = 10;
+object worldLock = new();
+var world = new int[BOARD_SIZE, BOARD_SIZE];
 
 Console.WriteLine("Hello, Leoboard!!");
 
@@ -36,61 +38,78 @@ void Run()
 
 void Points()
 {
-    var world = new bool[BOARD_SIZE, BOARD_SIZE];
+    Console.WriteLine($"Points thread: {Thread.CurrentThread.ManagedThreadId}");
+   
     for (int i = 0; i < world.GetLength(0); i++)
     {
         for(int j=0; j < world.GetLength(1); j++)
         {
-            world[i, j] = Random.Shared.Next(0, 2) == 0;
+            world[i, j] = Random.Shared.Next(0, 2);
         }
     }
 
+    bool limitIter = true;
+    int maxIter = 1000;
     Console.Write("\nPress any key to close...");
     Stopwatch sw = new Stopwatch();
-    while (!Console.KeyAvailable)
+    while (!Console.KeyAvailable && (!limitIter || maxIter-- > 0))
     {
         ModifyWorld(world);
         sw.Restart();
         PrintWorld(world);
         sw.Stop();
         Console.WriteLine("Elapsed time: {0} ms / {1} fps", sw.ElapsedMilliseconds, 1000 / sw.ElapsedMilliseconds);
-        //Task.Delay(500).Wait();
     }
 }
 
-void PrintWorld(bool[,] bools)
+void PrintWorld(int[,] bools)
 {
     for(int i = 0; i<bools.GetLength(0); i++)
     {
         for(int j = 0; j<bools.GetLength(1); j++)
         {
-            Board.SetCellContent(i, j, bools[i, j] ? "X" : " ", Brushes.Black);
+            if (bools[i, j] != 2)
+            {
+                Board.SetCellContent(i, j, bools[i, j] == 0 ? "X" : " ", Brushes.Black);
+            }
         }
     }
 }
 
-void ModifyWorld(bool[,] bools)
+void ModifyWorld(int[,] bools)
 {
     for (int i = 0; i < bools.GetLength(0); i++)
     {
         for (int j = 0; j < bools.GetLength(1); j++)
         {
-            bools[i, j] = Random.Shared.Next(0, 2) == 0;
+            if(bools[i,j] != 2)
+                bools[i, j] = Random.Shared.Next(0, 2);
         }
     }
 
 }
 
+void SetWorld(int row, int col, int value)
+{
+    lock (worldLock)
+    {
+        world[row, col] = value;
+    }
+}
+
 void HandleClick(int row, int col, bool leftClick, bool ctrlKeyPressed)
 {
+    Console.WriteLine($"HandleClick API thread: {Thread.CurrentThread.ManagedThreadId}");
     string ctrlState = ctrlKeyPressed ? " while pressing the Ctrl key" : string.Empty;
     Console.WriteLine($"Clicked cell ({row}, {col}) with {(leftClick ? "left" : "right")} mouse button{ctrlState}");
     if (leftClick)
     {
+        SetWorld(row, col, 2);
         Board.SetCellContent(row, col, "A", Brushes.Green);
     }
     else
     {
+        SetWorld(row, col, 0);
         Board.SetCellContent(row, col, "B", Brushes.Purple);
     }
 }
