@@ -15,6 +15,8 @@ public static class Board
     public static bool Initialized { get; internal set; }
     internal static Config Config => _config ?? throw new BoardException("No config set");
     internal static Action<int, int, string, IBrush>? SetCellContentOnWindow { get; set; }
+    private static object setCellContentLock = new ();
+    private static int dispatcherUIThreadId;
 
     public static void InitializeForTest(int rows, int columns)
     {
@@ -41,7 +43,9 @@ public static class Board
 
         Initialize(new(title, rows, columns, cellSize, fontSize, extraXTextOffset,
             drawGridNumbers, false, clickHandler));
-
+        
+        dispatcherUIThreadId = Thread.CurrentThread.ManagedThreadId;
+        
         Task.Run(async () =>
         {
             var waitStart = GetNow();
@@ -92,11 +96,23 @@ public static class Board
             col++;
         }
 
-        Dispatcher.UIThread.Invoke(() =>
+        if(Thread.CurrentThread.ManagedThreadId == dispatcherUIThreadId)
         {
             SetCellContentOnWindow.Invoke(row, col, content, color ?? Brushes.Black);
-            // ReSharper disable once AccessToDisposedClosure - we are waiting for the set before disposing
-        }, DispatcherPriority.MaxValue);
+        }
+        else 
+        {
+            
+            ManualResetEventSlim mresl = new(false);
+
+            Dispatcher.UIThread.Post(() =>
+            {
+                SetCellContentOnWindow.Invoke(row, col, content, color ?? Brushes.Black);
+                mresl.Set();
+                // ReSharper disable once AccessToDisposedClosure - we are waiting for the set before disposing
+            }, DispatcherPriority.MaxValue);
+            mresl.Wait();
+        }
     }
 
     public static string GetCellContent(int row, int col)
