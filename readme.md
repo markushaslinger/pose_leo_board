@@ -10,6 +10,10 @@ Left- and right-click events are captured and can be handled to update the cell 
 ## Sample usage
 
 ```csharp
+using System.Text;
+using Avalonia.Media;
+using LeoBoard;
+
 Board.Initialize(Run, "Foo", 10, 20,
                  clickHandler: HandleClick,
                  drawGridNumbers: true);
