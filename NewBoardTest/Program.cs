@@ -15,7 +15,7 @@ void Run()
     Board.SetCellContent(0, 0, "X");
     Board.SetCellContent(1, 1, "Y", Brushes.Red);
     Board.SetCellContent(2, 2, "Z", Brushes.Blue);
-    Board.SetCellContent(2, 2, "⬤", Brushes.Blue);
+    Board.SetCellContent(3, 3, "⬤", Brushes.Gold);
 
     Console.WriteLine(Board.GetCellContent(2, 2));
 
