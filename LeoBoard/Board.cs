@@ -12,7 +12,7 @@ public static class Board
     private static readonly TimeSpan initWaitMax = TimeSpan.FromSeconds(10);
     private static Config? _config;
     private static readonly ValueCache cellValues = new();
-    private static readonly object setContentMutex = new();
+    private static int _dispatcherUiThreadId = -1;
 
     public static bool Initialized { get; internal set; }
     internal static Config Config => _config ?? throw new BoardException("No config set");
@@ -20,8 +20,8 @@ public static class Board
 
     public static void InitializeForTest(int rows, int columns)
     {
-        Initialize(new ("Test", rows, columns, 20, 12, 0, 
-                        false, true, null));
+        Initialize(new("Test", rows, columns, 20, 12, 0,
+                       false, true, null));
     }
 
     private static void Initialize(Config config)
@@ -31,17 +31,20 @@ public static class Board
         cellValues.Clear();
     }
 
-    public static void Initialize(Action mainMethod, string title = "LeoBoard", int rows = 8, int columns = 8, int cellSize = 20,
-                                        int fontSize = 12, bool drawGridNumbers = false, int extraXTextOffset = 0,
-                                        Action<int, int, bool, bool>? clickHandler = null, int afterInitWaitSeconds = 1)
+    public static void Initialize(Action mainMethod, string title = "LeoBoard", int rows = 8, int columns = 8,
+                                  int cellSize = 20, int fontSize = 12, bool drawGridNumbers = false, 
+                                  int extraXTextOffset = 0, Action<int, int, bool, bool>? clickHandler = null, 
+                                  int afterInitWaitSeconds = 1)
     {
         if (Initialized)
         {
             throw new BoardException("Already initialized");
         }
 
-        Initialize(new(title, rows, columns, cellSize, fontSize, extraXTextOffset, 
+        Initialize(new(title, rows, columns, cellSize, fontSize, extraXTextOffset,
                        drawGridNumbers, false, clickHandler));
+
+        _dispatcherUiThreadId = Environment.CurrentManagedThreadId;
 
         Task.Run(async () =>
         {
@@ -60,13 +63,11 @@ public static class Board
             {
                 await Task.Delay(TimeSpan.FromSeconds(Math.Max(afterInitWaitSeconds, 0)));
             }
-            
+
             mainMethod();
         });
-        
+
         OpenWindow();
-
-
     }
 
     public static void SetCellContent(int row, int col, string content, IBrush? color = null)
@@ -83,41 +84,43 @@ public static class Board
         {
             return;
         }
-        
+
         if (SetCellContentOnWindow is null)
         {
             throw new BoardException("Handler for setting cell content not set");
         }
-        
+
         if (Config.DrawGridNumbers)
         {
             row++;
             col++;
         }
 
-        Task.Run(() =>
+        if (Environment.CurrentManagedThreadId == _dispatcherUiThreadId)
         {
-            lock (setContentMutex)
-            {
-                using var @event = new ManualResetEventSlim();
-        
-                Dispatcher.UIThread.Post(() =>
-                {
-                    SetCellContentOnWindow.Invoke(row, col, content, color ?? Brushes.Black);
-                    // ReSharper disable once AccessToDisposedClosure - we are waiting for the set before disposing
-                    @event.Set();
-                }, DispatcherPriority.MaxValue);
+            SetCellContentOnWindow.Invoke(row, col, content, color ?? Brushes.Black);
 
-                @event.Wait();
-            } 
-        });
+            return;
+        }
+
+        using var @event = new ManualResetEventSlim();
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            SetCellContentOnWindow.Invoke(row, col, content, color ?? Brushes.Black);
+            // ReSharper disable once AccessToDisposedClosure - we are waiting for the set before disposing
+            @event.Set();
+        }, DispatcherPriority.MaxValue);
+
+        @event.Wait();
     }
 
     public static string GetCellContent(int row, int col)
     {
         ThrowIfCellNotInRange(row, col);
+
         return cellValues[row, col];
-    } 
+    }
 
     public static void ShowMessageBox(string message, string title = "Information")
     {
@@ -128,7 +131,7 @@ public static class Board
             {
                 var box = MessageBoxManager.GetMessageBoxStandard(title, message, ButtonEnum.Ok);
                 await box.ShowAsync();
-            } 
+            }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
